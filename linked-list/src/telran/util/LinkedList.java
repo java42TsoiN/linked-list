@@ -233,13 +233,25 @@ public class LinkedList<T> implements List<T> {
 	}
 	@Override
 	public int sortedSearch(T pattern, Comparator comp) {
-		// TODO Auto-generated method stub
-		return 0;
+		Node<T> current = head;
+		int res = -(size + 1);
+		for (int i = 0; i < size; i++) {
+			int resComp = comp.compare(pattern, current.obj);
+			if (resComp == 0) {
+				res = i;
+				break;
+			} else if(resComp < 0) {
+				res = -(i + 1);
+				break;
+			}
+			current = current.next;
+		}
+		return res;
 	}
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		head = tail = null;
+		size = 0;
 	}
 
 }
