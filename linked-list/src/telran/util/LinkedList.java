@@ -2,6 +2,7 @@ package telran.util;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.function.Predicate;
 
 public class LinkedList<T> implements List<T> {
@@ -19,7 +20,32 @@ public class LinkedList<T> implements List<T> {
 
 	private Node<T> head; // reference to the first element
 	private Node<T> tail; // reference to the last element
+	private class LinkedListIterator implements Iterator<T>{
+		Node<T> current = head;
+		@Override
+		public boolean hasNext() {
+			return current!=null;
+		}
 
+		@Override
+		public T next() {
+			//return current T object
+			T res = current.obj;
+			//FIXME check res and throwing exception
+			//moves to a next current
+			current = current.next;
+			return res;
+		}
+		@Override
+		public void remove() {
+			//TODO
+			//removes element that has been returned by the last next call
+			//that is previous of the current. But current is null, then tail
+			//should be removed
+			//FIXME
+		}
+		
+	}
 	@Override
 	public void add(T element) {
 		//Complexity O[1]
@@ -157,15 +183,9 @@ public class LinkedList<T> implements List<T> {
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
 		//O[N]
-		int oldSize = size;
-		Node<T> current = head;
-		while(current != null) {
-			if (predicate.test(current.obj)) {
-				remove(current.obj);
-			}
-			current = current.next;
-		}
-		return oldSize > size;
+		//TODO write removeIf implementation based on iterator
+		//To apply items a.,b.,c. in the slide #18 with iterator.remove()
+		return false;
 	}
 
 	private T removeNode(Node<T> current) {
@@ -252,6 +272,11 @@ public class LinkedList<T> implements List<T> {
 	public void clear() {
 		head = tail = null;
 		size = 0;
+	}
+	@Override
+	public Iterator<T> iterator() {
+		
+		return new LinkedListIterator();
 	}
 
 }
