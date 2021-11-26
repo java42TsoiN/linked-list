@@ -3,10 +3,10 @@ package telran.util;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-public class LinkedList<T> implements List<T> {
-	private int size;
+public class LinkedList<T> extends AbstractList<T> {
 
 	private static class Node<T> {
 		T obj;
@@ -22,6 +22,7 @@ public class LinkedList<T> implements List<T> {
 	private Node<T> tail; // reference to the last element
 	private class LinkedListIterator implements Iterator<T>{
 		Node<T> current = head;
+		boolean doNext = false;
 		@Override
 		public boolean hasNext() {
 			return current!=null;
@@ -29,20 +30,27 @@ public class LinkedList<T> implements List<T> {
 
 		@Override
 		public T next() {
+			if(!hasNext()) throw new NoSuchElementException();
 			//return current T object
 			T res = current.obj;
 			//FIXME check res and throwing exception
 			//moves to a next current
+			doNext=true;
 			current = current.next;
 			return res;
 		}
+		
+		
+
 		@Override
 		public void remove() {
-			//TODO
-			//removes element that has been returned by the last next call
-			//that is previous of the current. But current is null, then tail
-			//should be removed
 			//FIXME
+			if(doNext==false) throw  new IllegalStateException();
+			if(current==null) {
+				removeNode(tail);
+			}else
+				removeNode(current.prev);
+			doNext=false;
 		}
 		
 	}
@@ -87,10 +95,7 @@ public class LinkedList<T> implements List<T> {
 		}
 		return current;
 	}
-	private boolean isValidIndex(int index) {
-		
-		return index >=0 && index < size;
-	}
+	
 	@Override
 	public boolean add(int index, T element) {
 		//O[N]
@@ -125,11 +130,6 @@ public class LinkedList<T> implements List<T> {
 		head.prev = newNode;
 		head = newNode;
 		
-	}
-	@Override
-	public int size() {
-		//O[1]
-		return size;
 	}
 
 	@Override
@@ -183,9 +183,14 @@ public class LinkedList<T> implements List<T> {
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
 		//O[N]
-		//TODO write removeIf implementation based on iterator
-		//To apply items a.,b.,c. in the slide #18 with iterator.remove()
-		return false;
+		Iterator<T> it= iterator();
+		int oldSize = size;
+		while (it.hasNext()){
+            if (predicate.test(it.next())){
+            	it.remove();
+            }
+        }
+		return oldSize>size;
 	}
 
 	private T removeNode(Node<T> current) {
